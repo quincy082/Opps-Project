@@ -1,14 +1,15 @@
 # InSem1Project
 
-###Group Name: Pixels
+### Group Name: Pixels
 ### Student 1: Dia Pitroda
-###            202404009
+### Student Id: 202404009
 
 ### Student 2: Vadi Quincy Hiren
-###            202401488
+### Student Id: 202401488
 
 ### Student 3: Sania Debbarma
-###            202404046
+### Student Id: 202404037
+
 
 # "Snake Game"
 
