@@ -19,9 +19,6 @@
 
 <br>
 
-
-# "Snake Game"
-
 # Snake Game - C++ Implementation
 
 ## Table of Contents
