@@ -1,6 +1,9 @@
 # InSem1Project
 
 ### Group Name: Pixels
+
+<br>
+
 ### Student 1: Dia Pitroda
 ### Student Id: 202404009
 
