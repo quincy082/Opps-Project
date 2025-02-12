@@ -1,6 +1,6 @@
-#include<bits/stdc++.h>
-#include<conio.h>
-#include<windows.h>
+#include <bits/stdc++.h>
+#include <conio.h>
+#include <windows.h>
 
 using namespace std;
 
@@ -12,16 +12,8 @@ const char DIR_DOWN = 'D';
 const char DIR_LEFT = 'L';
 const char DIR_RIGHT = 'R';
 
-int consoleWidth, consoleHeight;
-
-void initScreen()
-{
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    CONSOLE_SCREEN_BUFFER_INFO csbi;
-    GetConsoleScreenBufferInfo(hConsole, &csbi);
-    consoleHeight = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
-    consoleWidth = csbi.srWindow.Right - csbi.srWindow.Left + 1;
-}
+int consoleWidth = 40, consoleHeight = 20; // Fixed dimensions for stable gameplay
+int highScore = 0; // Store the highest score
 
 void hideCursor() {
     HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -31,20 +23,68 @@ void hideCursor() {
     SetConsoleCursorInfo(consoleHandle, &info);
 }
 
-struct Point{
-    int xCoord;
-    int yCoord;
+void gotoxy(int x, int y) {
+    COORD coord = { (SHORT)x, (SHORT)y };
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+}
+
+void drawCenteredText(string text, int y) {
+    int x = (consoleWidth - text.length()) / 2;
+    gotoxy(x, y);
+    cout << text;
+}
+
+void drawBorder() {
+    system("cls");
+    for (int i = 0; i < consoleWidth; i++) {
+        gotoxy(i, 0); cout << "#";
+        gotoxy(i, consoleHeight - 1); cout << "#";
+    }
+    for (int i = 0; i < consoleHeight; i++) {
+        gotoxy(0, i); cout << "#";
+        gotoxy(consoleWidth - 1, i); cout << "#";
+    }
+}
+
+void showStartScreen() {
+    system("cls");
+    drawBorder();
+
+    drawCenteredText("==== SNAKE GAME ====", consoleHeight / 2 - 3);
+    drawCenteredText("Use W, A, S, D to move", consoleHeight / 2 - 1);
+    drawCenteredText("Press any key to start...", consoleHeight / 2 + 1);
+    
+    getch();
+}
+
+bool showGameOverScreen(int score) {
+    system("cls");
+    drawBorder();
+
+    drawCenteredText("===== GAME OVER! =====", consoleHeight / 2 - 4);
+    drawCenteredText("Final Score: " + to_string(score), consoleHeight / 2 - 2);
+    drawCenteredText("High Score: " + to_string(highScore), consoleHeight / 2);
+    drawCenteredText("Press 'R' to Restart", consoleHeight / 2 + 2);
+    drawCenteredText("Press any other key to Exit", consoleHeight / 2 + 4);
+
+    char choice = getch();
+    return (choice == 'r' || choice == 'R');
+}
+
+struct Point {
+    int xCoord, yCoord;
     Point() {}
     Point(int x, int y) : xCoord(x), yCoord(y) {}
 };
 
-class Snake{
+class Snake {
     int length;
     char direction;
 public:
     Point body[MAX_LENGTH];
+
     Snake(int x, int y) : length(1), direction(DIR_RIGHT) {
-       body[0] = Point(x, y);
+        body[0] = Point(x, y);
     }
 
     int getLength() { return length; }
@@ -70,12 +110,20 @@ public:
             case DIR_RIGHT: body[0].xCoord++; break;
         }
 
+        // Collision with itself
         for (int i = 1; i < length; i++) {
             if (body[0].xCoord == body[i].xCoord && body[0].yCoord == body[i].yCoord) {
                 return false;
             }
         }
 
+        // Collision with borders
+        if (body[0].xCoord <= 0 || body[0].xCoord >= consoleWidth - 1 ||
+            body[0].yCoord <= 0 || body[0].yCoord >= consoleHeight - 1) {
+            return false;
+        }
+
+        // Eating food
         if (food.xCoord == body[0].xCoord && food.yCoord == body[0].yCoord) {
             body[length++] = Point(body[length - 1].xCoord, body[length - 1].yCoord);
         }
@@ -84,8 +132,8 @@ public:
     }
 };
 
-class Board{
-    Snake *snake;
+class Board {
+    Snake* snake;
     const char SNAKE_BODY = 'O';
     Point food;
     const char FOOD = 'o';
@@ -104,14 +152,11 @@ public:
         food = Point(rand() % (consoleWidth - 2) + 1, rand() % (consoleHeight - 2) + 1);
     }
 
-    void gotoxy(int x, int y) {
-        COORD coord = { (SHORT)x, (SHORT)y };
-        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
-    }
-
     void draw() {
-        gotoxy(0, 0);
-        cout << "Score: " << score;
+        system("cls");
+        drawBorder();
+        gotoxy(2, consoleHeight);
+        cout << "Score: " << score << "  High Score: " << highScore;
 
         gotoxy(food.xCoord, food.yCoord);
         cout << FOOD;
@@ -131,6 +176,7 @@ public:
 
         if (food.xCoord == snake->body[0].xCoord && food.yCoord == snake->body[0].yCoord) {
             score++;
+            if (score > highScore) highScore = score;
             spawnFood();
         }
         return true;
@@ -149,16 +195,22 @@ public:
 
 int main() {
     srand(time(0));
-    initScreen();
     hideCursor();
-    Board *board = new Board();
-    while (board->update()) {
-        board->getInput();
-        board->draw();
-        Sleep(100);
+
+    while (true) {
+        showStartScreen();
+        Board* board = new Board();
+        while (board->update()) {
+            board->getInput();
+            board->draw();
+            Sleep(100);
+        }
+        delete board;
+
+        if (!showGameOverScreen(board->getScore())) {
+            break;
+        }
     }
 
-    board -> gotoxy(consoleWidth / 2, consoleHeight / 2);
-    cout << "Game Over! Final Score: " << board->getScore() << endl;
     return 0;
-}
+} 
