@@ -78,7 +78,7 @@ To compile and run the Snake game, follow these steps:
    ```
 
 ## Screenshots
-![Snake Game Screenshot](Screenshot%202025-02-09%20200253.png)
+![Snake Game Screenshot](Screenshot%202025-02-13%20020613.png)
 
 ## Conclusion
 The Snake game implemented in C++ is a fun and simple console-based game that demonstrates basic concepts such as collision detection, movement logic, and user input handling. It can be further extended to add features like levels, different difficulties, or enhanced graphics. This implementation provides a solid foundation for anyone looking to learn or enhance their understanding of game development in C++.
