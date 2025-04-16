@@ -105,7 +105,7 @@ The main game loop performs the following tasks:
 
 Below is an image of the game in action:
 
-![Snake Game Screenshot](Screenshot%202025-02-10%20185727.png)  
+![Snake Game Screenshot](Screenshot 2025-02-13 020613.png)  
 *Snake game running with a score of 4 before game over.*
 
 <br>
