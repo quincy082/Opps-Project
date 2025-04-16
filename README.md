@@ -1,4 +1,4 @@
-# Proj_3
+# Snake Game in C++
 
 ### Group Name: Pixels
 
@@ -19,93 +19,113 @@
 
 <br>
 
-# Multiplayer LAN Carrom Game – C & OpenGL Implementation
-
-## Table of Contents
-- [Overview](#overview)
-- [Modules](#modules)
-- [Execution Flow](#execution-flow)
-- [Architecture & Analysis](#architecture--analysis)
-- [How to Build and Run](#how-to-build-and-run)
-- [Contribution Suggestions](#contribution-suggestions)
+## 📋 Table of Contents
+- [Introduction](#introduction)
+- [Game Components](#game-components)
+  - [Snake Representation](#snake-representation)
+  - [Food Generation](#food-generation)
+  - [Game Board](#game-board)
+  - [User Input and Movement](#user-input-and-movement)
+- [Controls](#controls)
+- [Collision Detection](#collision-detection)
+- [Score Tracking](#score-tracking)
+- [Game Loop and Logic](#game-loop-and-logic)
+- [Screenshot](#screenshot)
+- [Conclusion](#conclusion)
 - [License](#license)
 
-## Overview
-This project is a real-time, LAN-based multiplayer **Carrom** game built using **C** and **OpenGL**, with networking handled via **TCP sockets**.
+<br>
 
-It supports:
-- 2-player LAN mode  
-- 2-player mode with AI  
-- 4-player mode using separate clients
+## 🐍 Introduction
+The Snake game is a classic arcade game where the player controls a snake that grows in length by consuming food. The challenge lies in avoiding collisions with the wall or the snake's own body. As the snake grows, movement becomes more difficult, creating an engaging gameplay experience.
 
 <br>
 
-## Modules
+## 🧩 Game Components
 
-- `main.c`: Initializes OpenGL and selects game mode  
-- `car_client2p.c`: 2-player LAN client logic  
-- `car_client2p_ai.c`: 2-player client with AI  
-- `car_client4p1.c`, `car_client4p2.c`, `car_client4p3.c`: 4-player clients  
-- `serv_include/`: Server logic for player syncing and game state broadcasting  
-- `Makefile`: Automates the compilation of modules
+### 🧱 Snake Representation
+The snake is implemented as a linked list, where each node contains the `(x, y)` coordinates of one segment. The head node represents the snake's current position. New nodes are added as the snake eats food.
 
 <br>
 
-## Execution Flow
-
-1. Start the server; it begins listening for client connections  
-2. Clients connect using server’s IP and port; player IDs are assigned  
-3. Game state is initialized (striker, coins, scores)  
-4. Server coordinates turn-based actions  
-5. Clients send move data to the server  
-6. Server validates moves and broadcasts updated state  
-7. Game continues until a player wins
+### 🍎 Food Generation
+Food is randomly spawned on the board at empty spaces, ensuring it doesn't overlap with the snake. When the snake eats food, it grows longer and a new food item is generated at a new random location.
 
 <br>
 
-## Architecture & Analysis
-
-### Approaches Used
-
-- **TCP Sockets**: Ensures reliable message delivery  
-- **OpenGL**: Handles 2D rendering for the board and objects  
-- **Client Split Logic**: Each gameplay mode has a separate client  
-- **AI Mode**: AI logic is embedded in a dedicated client
+### 🗺️ Game Board
+The board defines the play area and is bounded. The snake must stay within this area. Hitting the boundary is considered a collision and ends the game. The board size can be customized to adjust difficulty.
 
 <br>
 
-### Key Data Structures
-
-- `struct point`: Represents a 2D coordinate (x, y)  
-- `char buffer[1024]`: For serializing and sharing game states  
-- `int turn, player_id`: Controls turns and player management  
-- `coin_x[10], coin_y[10]`: Arrays representing coin positions
+### 🎮 User Input and Movement
+Players control the snake using directional inputs. The snake continuously moves in the current direction until a new input is received. Reverse movement (like left to right instantly) is disallowed to prevent self-collisions.
 
 <br>
 
-### Trade-offs Made
+## 🕹️ Controls
 
-| Design Choice                  | Advantages                             | Drawbacks                                 |
-|-------------------------------|----------------------------------------|-------------------------------------------|
-| Separate clients (4-player)   | Easier role management and debugging   | Redundant code, not scalable              |
-| TCP Protocol                  | Reliable and ordered communication     | Slightly more latency and setup overhead  |
-| Direct OpenGL use             | Lightweight, minimal dependencies      | Limited UI/UX capabilities                |
-| Hardcoded AI                  | Quick to integrate, no API needed      | Not reusable, lacks learning capability   |
+The following keys are used to control the game:
 
-<br>
-
-## How to Build and Run
-
-### Prerequisites
-
-- Linux or macOS  
-- GCC compiler  
-- OpenGL + GLUT (`freeglut3-dev` on Ubuntu)
+- **L**: Move Left  
+- **R**: Move Right  
+- **U**: Move Up  
+- **D**: Move Down  
+- **T**: Terminate the game
 
 <br>
 
-### Build Instructions
+## 💥 Collision Detection
+The game ends when:
+- The snake hits the board boundaries.
+- The snake collides with its own body.
 
-```bash
-sudo apt install freeglut3-dev
-make
+Collision detection logic ensures the game gets progressively harder as the snake grows, increasing the risk of self-collision.
+
+<br>
+
+## 🧮 Score Tracking
+The player's score increases each time the snake consumes food. The longer the snake grows, the higher the score. This creates an incentive to survive longer and improve performance.
+
+<br>
+
+## 🔁 Game Loop and Logic
+
+The main game loop performs the following tasks:
+
+1. **Render** the board, snake, and food  
+2. **Capture user input** for directional control  
+3. **Update the snake's position**, grow if food is consumed  
+4. **Check for collisions**  
+5. **Repeat** the above steps until the game ends or is manually terminated
+
+<br>
+
+## 📸 Screenshot
+
+Below is an image of the game in action:
+
+![Snake Game Screenshot](Screenshot%202025-02-10%20185727.png)  
+*Snake game running with a score of 4 before game over.*
+
+<br>
+
+## ✅ Conclusion
+
+The Snake game is a great project for learning:
+- Data structures like linked lists  
+- Input and event handling  
+- Basic game loop logic  
+- Collision detection
+
+It provides a strong foundation for beginners and can be enhanced with new features like levels, power-ups, or even multiplayer support.
+
+<br>
+
+## 📄 License
+
+This project is released under the **MIT License**, meaning:
+- You can use, modify, and distribute the code freely  
+- Just remember to credit the original authors
+
+<br>
