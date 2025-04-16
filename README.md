@@ -1,87 +1,111 @@
-# InSem1Project
+# Proj_3
 
 ### Group Name: Pixels
 
 <br>
 
-### Student 1: Dia Pitroda
-### Student Id: 202404009
-
-<br> 
-
-### Student 2: Vadi Quincy Hiren
-### Student Id: 202401488
+### Student 1: Dia Pitroda  
+### Student ID: 202404009  
 
 <br>
 
-### Student 3: Sania Debbarma
-### Student Id: 202404037
+### Student 2: Vadi Quincy Hiren  
+### Student ID: 202401488  
 
 <br>
 
-# Snake Game - C++ Implementation
+### Student 3: Sania Debbarma  
+### Student ID: 202404037  
+
+<br>
+
+# Multiplayer LAN Carrom Game – C & OpenGL Implementation
 
 ## Table of Contents
 - [Overview](#overview)
-- [Features](#features)
-- [Game Controls](#game-controls)
-- [Code Explanation](#code-explanation)
-- [Compiling and Running the Game](#compiling-and-running-the-game)
-- [Screenshots](#screenshots)
-- [Conclusion](#conclusion)
+- [Modules](#modules)
+- [Execution Flow](#execution-flow)
+- [Architecture & Analysis](#architecture--analysis)
+- [How to Build and Run](#how-to-build-and-run)
+- [Contribution Suggestions](#contribution-suggestions)
 - [License](#license)
 
 ## Overview
-This is a simple implementation of the classic Snake game in C++ using the Windows console. The game features a snake that moves around the screen, eating food to grow longer, while avoiding collisions with itself and the walls. The player controls the snake using the keyboard keys W, A, S, and D for up, left, down, and right respectively.
+This project is a real-time, LAN-based multiplayer **Carrom** game built using **C** and **OpenGL**, with networking handled via **TCP sockets**.
 
-## Features
-- **Snake Movement**: The snake moves in four directions: Up, Down, Left, and Right.
-- **Food Generation**: Random food is spawned on the board, and the snake grows when it eats the food.
-- **Collision Detection**: The game detects collisions with the snake's body and ends the game if a collision occurs.
-- **Score Tracking**: The score is displayed and increases when the snake eats food.
-- **Console-based Game**: The game runs in a Windows console with a simple text-based interface.
+It supports:
+- 2-player LAN mode  
+- 2-player mode with AI  
+- 4-player mode using separate clients
 
-## Game Controls
-The game uses the following keyboard inputs to control the snake:
-- **W** or **w**: Move Up
-- **A** or **a**: Move Left
-- **S** or **s**: Move Down
-- **D** or **d**: Move Right
+<br>
 
-## Code Explanation
-### Classes
-- **Point**: This structure represents a point on the board with `xCoord` and `yCoord` representing the x and y coordinates of the point.
-- **Snake**: This class contains the snake's body as an array of `Point`s. It tracks the direction and movement of the snake, as well as checking for collisions and growing when food is eaten.
-- **Board**: This class handles the game's main functionality, including spawning food, drawing the game state, updating the board, and handling user input. It also keeps track of the score and checks if the snake collides with itself or the walls.
+## Modules
 
-### Functions
-- `initScreen()`: Initializes the console screen's width and height.
-- `hideCursor()`: Hides the cursor to provide a cleaner game experience.
-- `gotoxy(x, y)`: Moves the console cursor to the specified x and y coordinates.
-- `draw()`: Draws the game state, including the snake, food, and score.
-- `update()`: Updates the game state, moves the snake, checks for collisions, and checks if the snake has eaten the food.
-- `getInput()`: Handles user input to change the snake's direction.
+- `main.c`: Initializes OpenGL and selects game mode  
+- `car_client2p.c`: 2-player LAN client logic  
+- `car_client2p_ai.c`: 2-player client with AI  
+- `car_client4p1.c`, `car_client4p2.c`, `car_client4p3.c`: 4-player clients  
+- `serv_include/`: Server logic for player syncing and game state broadcasting  
+- `Makefile`: Automates the compilation of modules
 
-## Compiling and Running the Game
-To compile and run the Snake game, follow these steps:
+<br>
 
-1. Make sure you are using a C++ compiler that supports C++11 or later.
-2. Save the code to a file named `snake.cpp`.
-3. Open a terminal and navigate to the folder containing the `snake.cpp` file.
-4. Compile the code using the following command:
-   ```bash
-   g++ -o snake snake.cpp
-   ```
-5. Run the compiled program:
-   ```bash
-   ./snake
-   ```
+## Execution Flow
 
-## Screenshots
-![Snake Game Screenshot](Screenshot%202025-02-13%20020613.png)
+1. Start the server; it begins listening for client connections  
+2. Clients connect using server’s IP and port; player IDs are assigned  
+3. Game state is initialized (striker, coins, scores)  
+4. Server coordinates turn-based actions  
+5. Clients send move data to the server  
+6. Server validates moves and broadcasts updated state  
+7. Game continues until a player wins
 
-## Conclusion
-The Snake game implemented in C++ is a fun and simple console-based game that demonstrates basic concepts such as collision detection, movement logic, and user input handling. It can be further extended to add features like levels, different difficulties, or enhanced graphics. This implementation provides a solid foundation for anyone looking to learn or enhance their understanding of game development in C++.
+<br>
 
-## License
-This project is open-source and available under the MIT License.
+## Architecture & Analysis
+
+### Approaches Used
+
+- **TCP Sockets**: Ensures reliable message delivery  
+- **OpenGL**: Handles 2D rendering for the board and objects  
+- **Client Split Logic**: Each gameplay mode has a separate client  
+- **AI Mode**: AI logic is embedded in a dedicated client
+
+<br>
+
+### Key Data Structures
+
+- `struct point`: Represents a 2D coordinate (x, y)  
+- `char buffer[1024]`: For serializing and sharing game states  
+- `int turn, player_id`: Controls turns and player management  
+- `coin_x[10], coin_y[10]`: Arrays representing coin positions
+
+<br>
+
+### Trade-offs Made
+
+| Design Choice                  | Advantages                             | Drawbacks                                 |
+|-------------------------------|----------------------------------------|-------------------------------------------|
+| Separate clients (4-player)   | Easier role management and debugging   | Redundant code, not scalable              |
+| TCP Protocol                  | Reliable and ordered communication     | Slightly more latency and setup overhead  |
+| Direct OpenGL use             | Lightweight, minimal dependencies      | Limited UI/UX capabilities                |
+| Hardcoded AI                  | Quick to integrate, no API needed      | Not reusable, lacks learning capability   |
+
+<br>
+
+## How to Build and Run
+
+### Prerequisites
+
+- Linux or macOS  
+- GCC compiler  
+- OpenGL + GLUT (`freeglut3-dev` on Ubuntu)
+
+<br>
+
+### Build Instructions
+
+```bash
+sudo apt install freeglut3-dev
+make
